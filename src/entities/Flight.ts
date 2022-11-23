@@ -1,31 +1,76 @@
-// year: '2015',
-//   month: '1',
-//   day: '2',
-//   day_of_week: '5',
-//   airline: 'NK',
-//   flight_number: '858',
-//   tail_number: 'N532NK',
-//   origin_airport: 'SAN',
-//   destination_airport: 'IAH',
-//   scheduled_departure: '0800',
-//   departure_time: '0757',
-//   departure_delay: '-3',
-//   taxi_out: '13',
-//   wheels_off: '0810',
-//   scheduled_time: '178',
-//   elapsed_time: '189',
-//   air_time: '163',
-//   distance: '1303',
-//   wheels_on: '1253',
-//   taxi_in: '13',
-//   scheduled_arrival: '1258',
-//   arrival_time: '1306',
-//   arrival_delay: '8',
-//   diverted: '0',
-//   cancelled: '0',
-//   cancellation_reason: '',
-//   air_system_delay: '',
-//   security_delay: '',
-//   airline_delay: '',
-//   late_aircraft_delay: '',
-//   weather_delay: ''
+import { Column, Entity, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
+import { Airline } from "./Airline";
+import { Airport } from "./Airport";
+
+@Entity()
+export class Flight extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  year: number;
+  @Column()
+  month: number;
+  @Column()
+  day: number;
+  @Column()
+  day_of_week: number;
+
+  @ManyToOne(() => Airline, (airline) => airline.flights)
+  airline: Airline;
+
+  @Column({ unique: true })
+  flight_number: number;
+  @Column()
+  tail_number: string;
+
+  // @ManyToOne(() => Airport)
+  // origin_airport: string;
+  // @ManyToOne(() => Airport)
+  // destination_airport: string;
+
+  @Column()
+  scheduled_departure: number;
+  @Column({ nullable: true })
+  departure_time: number;
+  @Column({ nullable: true })
+  departure_delay: number;
+  @Column({ nullable: true })
+  taxi_out: number;
+  @Column({ nullable: true })
+  wheels_off: number;
+  @Column({ nullable: true })
+  scheduled_time: number;
+  @Column({ nullable: true })
+  elapsed_time: number;
+  @Column({ nullable: true })
+  air_time: number;
+  @Column({ nullable: true })
+  distance: number;
+  @Column({ nullable: true })
+  wheels_on: number;
+  @Column({ nullable: true })
+  taxi_in: number;
+  @Column({ nullable: true })
+  scheduled_arrival: number;
+  @Column({ nullable: true })
+  arrival_time: number;
+  @Column({ nullable: true })
+  arrival_delay: number;
+  @Column({ nullable: true })
+  diverted: number;
+  @Column({ nullable: true })
+  cancelled: number;
+  @Column({ nullable: true })
+  cancellation_reason: number;
+  @Column({ nullable: true })
+  air_system_delay: number;
+  @Column({ nullable: true })
+  security_delay: number;
+  @Column({ nullable: true })
+  airline_delay: number;
+  @Column({ nullable: true })
+  late_aircraft_delay: number;
+  @Column({ nullable: true })
+  weather_delay: number;
+}

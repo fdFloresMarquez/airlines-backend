@@ -1,11 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, BaseEntity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Flight } from "./Flight";
 
 @Entity()
-export class Airport {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class Airport extends BaseEntity {
 
-  @Column()
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @PrimaryColumn({ unique: true, length: 3 })
   iata_code: string;
 
   @Column()
@@ -20,9 +22,19 @@ export class Airport {
   @Column()
   country: string;
 
-  @Column()
+  @Column({ type: "float" })
   latitude: number;
 
-  @Column()
+  @Column({ type: "float" })
   longitude: number;
+
+  @OneToMany(() => Flight, (flight) => flight.origin_airport, {
+    onDelete: "CASCADE",
+  })
+  departures_flights: Flight[];
+
+  @OneToMany(() => Flight, (flight) => flight.destination_airport, {
+    onDelete: "CASCADE",
+  })
+  arrival_flights: Flight[];
 }

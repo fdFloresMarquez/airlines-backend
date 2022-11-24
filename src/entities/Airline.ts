@@ -12,6 +12,6 @@ export class Airline extends BaseEntity {
   @Column({ unique: true})
   airline: string;
 
-  @OneToMany(() => Flight, (flight) => flight.airline, { onDelete: "CASCADE" })
+  @OneToMany(() => Flight, (flight) => flight.airline)
   flights: Flight[];
 }

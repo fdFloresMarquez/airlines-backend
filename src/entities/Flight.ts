@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, BaseEntity, ManyToOne } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  BaseEntity,
+  ManyToOne,
+} from "typeorm";
 import { Airline } from "./Airline";
 import { Airport } from "./Airport";
 
@@ -16,7 +22,9 @@ export class Flight extends BaseEntity {
   @Column()
   day_of_week: number;
 
-  @ManyToOne(() => Airline, (airline) => airline.flights)
+  @ManyToOne(() => Airline, (airline) => airline.flights, {
+    onDelete: "CASCADE",
+  })
   airline: Airline;
 
   @Column({ unique: true })
@@ -24,10 +32,14 @@ export class Flight extends BaseEntity {
   @Column()
   tail_number: string;
 
-  // @ManyToOne(() => Airport)
-  // origin_airport: string;
-  // @ManyToOne(() => Airport)
-  // destination_airport: string;
+  @ManyToOne(() => Airport, (airport) => airport.departures_flights, {
+    onDelete: "CASCADE",
+  })
+  origin_airport: Airport;
+  @ManyToOne(() => Airport, (airport) => airport.arrival_flights, {
+    onDelete: "CASCADE",
+  })
+  destination_airport: Airport;
 
   @Column()
   scheduled_departure: number;

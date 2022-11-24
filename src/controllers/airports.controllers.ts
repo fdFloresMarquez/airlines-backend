@@ -3,33 +3,31 @@ import { Airport } from "../entities/Airport";
 
 export const createAirport = async (req: Request, res: Response) => {
   try {
-    const {
-      iata_code,
-      airport,
-      city,
-      state,
-      country,
-      latitude,
-      longitude,
-    } = req.body;
-    const airportEntity = new Airport();
+    const { iata_code, airport, city, state, country, latitude, longitude } =
+      req.body;
 
-    // String Values
-    airportEntity.iata_code = iata_code;
-    airportEntity.airport = airport;
-    airportEntity.city = city;
-    airportEntity.state = state;
-    airportEntity.country = country;
-    airportEntity.departures_flights = [];
-    airportEntity.arrival_flights = [];
+    const findAirport = await Airport.findBy({ iata_code: iata_code });
 
-    // Numeric values
-    airportEntity.latitude = parseFloat(latitude);
-    airportEntity.longitude = parseFloat(longitude);
+    if (findAirport.length < 1) {
+      const airportEntity = new Airport();
 
-    await airportEntity.save();
+      // String Values
+      airportEntity.iata_code = iata_code;
+      airportEntity.airport = airport;
+      airportEntity.city = city;
+      airportEntity.state = state;
+      airportEntity.country = country;
 
-    return res.json(airportEntity);
+      // Numeric values
+      airportEntity.latitude = parseFloat(latitude);
+      airportEntity.longitude = parseFloat(longitude);
+
+      await airportEntity.save();
+
+      return res.json(airportEntity);
+    } else {
+      return res.status(403).json({ message: "Airport alredy exists!" });
+    }
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message });
@@ -39,7 +37,10 @@ export const createAirport = async (req: Request, res: Response) => {
 
 export const getAirports = async (req: Request, res: Response) => {
   try {
-    const airports = await Airport.find();
+    const airports = await Airport.find({ relations: {
+      arrival_flights: true,
+      departures_flights: true,
+    }});
 
     return res.json(airports);
   } catch (error) {
@@ -93,8 +94,14 @@ export const deleteAirport = async (req: Request, res: Response) => {
 
 export const getAirportById = async (req: Request, res: Response) => {
   try {
-    const airport = await Airport.findOneBy({
-      id: parseInt(req.params.id),
+    const airport = await Airport.findOne({
+      where: {
+        id: parseInt(req.params.id),
+      },
+      relations: {
+        arrival_flights: true,
+        departures_flights: true,
+      },
     });
 
     if (!airport)

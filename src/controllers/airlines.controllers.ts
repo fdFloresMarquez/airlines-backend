@@ -5,14 +5,20 @@ export const createAirline = async (req: Request, res: Response) => {
   try {
     const { iata_code, airline } = req.body;
 
-    const airlineEntity = new Airline();
+    const findAirline = await Airline.findBy({ iata_code: iata_code });
 
-    airlineEntity.iata_code = iata_code;
-    airlineEntity.airline = airline;
+    if (findAirline.length < 1) {
+      const airlineEntity = new Airline();
 
-    await airlineEntity.save();
+      airlineEntity.iata_code = iata_code;
+      airlineEntity.airline = airline;
 
-    return res.json(airlineEntity);
+      await airlineEntity.save();
+
+      return res.json(airlineEntity);
+    } else {
+      return res.status(403).json({ message: "Airline alredy exist" });
+    }
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message });
@@ -82,8 +88,13 @@ export const getAirlineById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const airlineEntity = await Airline.findOneBy({
-      id: parseInt(id),
+    const airlineEntity = await Airline.findOne({
+      where: {
+        id: parseInt(id),
+      },
+      relations: {
+        flights: true,
+      },
     });
 
     if (!airlineEntity)

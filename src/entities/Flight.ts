@@ -27,7 +27,7 @@ export class Flight extends BaseEntity {
   })
   airline: Airline;
 
-  @Column({ unique: true })
+  @Column()
   flight_number: number;
   @Column()
   tail_number: string;

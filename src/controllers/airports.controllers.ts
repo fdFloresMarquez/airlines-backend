@@ -1,30 +1,23 @@
 import { Request, Response } from "express";
+import { AppDataSource } from "../db";
 import { Airport } from "../entities/Airport";
+import { addPropertiesToAirport } from "../utils";
 
 export const createAirport = async (req: Request, res: Response) => {
   try {
-    const { iata_code, airport, city, state, country, latitude, longitude } =
-      req.body;
+    const { iata_code } = req.body;
 
     const findAirport = await Airport.findBy({ iata_code: iata_code });
 
     if (findAirport.length < 1) {
-      const airportEntity = new Airport();
+      const newAirport = new Airport();
 
-      // String Values
-      airportEntity.iata_code = iata_code;
-      airportEntity.airport = airport;
-      airportEntity.city = city;
-      airportEntity.state = state;
-      airportEntity.country = country;
+      const airport = addPropertiesToAirport(newAirport, req.body);
 
-      // Numeric values
-      airportEntity.latitude = parseFloat(latitude);
-      airportEntity.longitude = parseFloat(longitude);
+      const airportRepository = AppDataSource.getRepository(Airport);
+      await airportRepository.save(airport);
 
-      await airportEntity.save();
-
-      return res.json(airportEntity);
+      return res.json(airport);
     } else {
       return res.status(403).json({ message: "Airport alredy exists!" });
     }
@@ -37,10 +30,12 @@ export const createAirport = async (req: Request, res: Response) => {
 
 export const getAirports = async (req: Request, res: Response) => {
   try {
-    const airports = await Airport.find({ relations: {
-      arrival_flights: true,
-      departures_flights: true,
-    }});
+    const airports = await Airport.find({
+      relations: {
+        arrival_flights: true,
+        departures_flights: true,
+      },
+    });
 
     return res.json(airports);
   } catch (error) {

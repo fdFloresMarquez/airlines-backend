@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
+import { AppDataSource } from "../db";
 import { Airline } from "../entities/Airline";
+import { addPropertiesToAirline } from "../utils";
 
 export const createAirline = async (req: Request, res: Response) => {
   try {
-    const { iata_code, airline } = req.body;
-
-    const findAirline = await Airline.findBy({ iata_code: iata_code });
+    const findAirline = await Airline.findBy({ iata_code: req.body.iata_code });
 
     if (findAirline.length < 1) {
-      const airlineEntity = new Airline();
+      const newAirline = new Airline();
 
-      airlineEntity.iata_code = iata_code;
-      airlineEntity.airline = airline;
+      const airline = addPropertiesToAirline(newAirline, req.body)
 
-      await airlineEntity.save();
+      const airlineRepository = AppDataSource.getRepository(Airline);
+      await airlineRepository.save(airline);
 
-      return res.json(airlineEntity);
+      return res.json(airline);
     } else {
       return res.status(403).json({ message: "Airline alredy exist" });
     }

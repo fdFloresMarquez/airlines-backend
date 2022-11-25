@@ -1,3 +1,5 @@
+import { Airline, Airport } from "../entities";
+
 export interface DataAirline {
   iata_code: string;
   airline: string;
@@ -45,4 +47,10 @@ export interface DataFlight {
   airline_delay: string;
   late_aircraft_delay: string;
   weather_delay: string;
+}
+
+export interface FlightRelations {
+  airline: Airline;
+  origin: Airport;
+  destination: Airport;
 }

@@ -3,22 +3,12 @@ import { AppDataSource } from "../db";
 import { Airline } from "../entities/Airline";
 import { Airport } from "../entities/Airport";
 import { Flight } from "../entities/Flight";
+import { FlightRelations } from "../types";
+import { addPropertiesToFlight } from "../utils";
 
 export const createFlight = async (req: Request, res: Response) => {
   try {
-    const {
-      year,
-      month,
-      day,
-      day_of_week,
-      flight_number,
-      tail_number,
-      origin_airport,
-      destination_airport,
-      scheduled_departure,
-    } = req.body;
-
-    const flight = new Flight();
+    const { origin_airport, destination_airport } = req.body;
 
     const airline = await AppDataSource.getRepository(Airline).findOne({
       where: { iata_code: req.body.airline },
@@ -33,18 +23,11 @@ export const createFlight = async (req: Request, res: Response) => {
     });
 
     if (airline && origin && destination) {
-      flight.airline = airline;
-      flight.tail_number = tail_number;
-      flight.origin_airport = origin;
-      flight.destination_airport = destination;
+      const newFlight = new Flight();
 
-      // Number values
-      flight.year = parseInt(year);
-      flight.month = parseInt(month);
-      flight.day = parseInt(day);
-      flight.day_of_week = parseInt(day_of_week);
-      flight.flight_number = parseInt(flight_number);
-      flight.scheduled_departure = parseInt(scheduled_departure);
+      const relations: FlightRelations = { airline, origin, destination };
+
+      const flight = addPropertiesToFlight(newFlight, relations, req.body);
 
       await AppDataSource.manager.save(flight);
 
@@ -148,7 +131,7 @@ export const getFlightById = async (req: Request, res: Response) => {
       },
     });
 
-    if (!flight)
+    if (flight.length < 1)
       return res.status(404).json({ message: "Flight does not exist" });
 
     return res.json(flight);

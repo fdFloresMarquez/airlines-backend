@@ -1,4 +1,7 @@
 node_modules
 .env
 dist
+airlines.csv
+airports.csv
+flights.csv
 

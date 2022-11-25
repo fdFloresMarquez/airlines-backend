@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import app from "./app";
-import { Request, Response } from "express";
 import dotenv from "dotenv";
 import { AppDataSource } from "./db";
 
@@ -13,9 +12,6 @@ async function main() {
   try {
     await AppDataSource.initialize();
     console.log("Database Connected");
-    app.get("/", (req: Request, res: Response) => {
-      res.send("Express + TypeScript Server");
-    });
 
     app.listen(port, () => {
       console.log(

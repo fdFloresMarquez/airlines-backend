@@ -28,11 +28,7 @@ export const createAirline = async (req: Request, res: Response) => {
 
 export const getAirlines = async (req: Request, res: Response) => {
   try {
-    const airlines = await Airline.find({
-      relations: {
-        flights: true,
-      },
-    });
+    const airlines = await Airline.find({});
 
     return res.json(airlines);
   } catch (error) {

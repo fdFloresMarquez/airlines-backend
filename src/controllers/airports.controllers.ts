@@ -30,12 +30,7 @@ export const createAirport = async (req: Request, res: Response) => {
 
 export const getAirports = async (req: Request, res: Response) => {
   try {
-    const airports = await Airport.find({
-      relations: {
-        arrival_flights: true,
-        departures_flights: true,
-      },
-    });
+    const airports = await Airport.find({});
 
     return res.json(airports);
   } catch (error) {

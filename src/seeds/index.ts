@@ -16,11 +16,15 @@ import {
   addPropertiesToFlight,
 } from "../utils";
 
+const airlinesCsvName = "airlines.csv";
+const airportsCsvName = "airports.csv";
+const flightsCsvName = "flights.csv";
+
 const seedAirlines = async (): Promise<void> => {
   try {
     await AppDataSource.createQueryBuilder().delete().from(Airline).execute();
 
-    fs.createReadStream(path.resolve(__dirname, "assets", "airlines.csv"))
+    fs.createReadStream(path.resolve(__dirname, "assets", airlinesCsvName))
       .pipe(
         csvParser.parse({
           headers: (headers) => headers.map((h) => h?.toLowerCase()),
@@ -47,7 +51,7 @@ const seedAirports = async (): Promise<void> => {
   try {
     await AppDataSource.createQueryBuilder().delete().from(Airport).execute();
 
-    fs.createReadStream(path.resolve(__dirname, "assets", "airports.csv"))
+    fs.createReadStream(path.resolve(__dirname, "assets", airportsCsvName))
       .pipe(
         csvParser.parse({
           headers: (headers) => headers.map((h) => h?.toLowerCase()),
@@ -75,7 +79,7 @@ const seedFlights = async (): Promise<void> => {
   try {
     await AppDataSource.createQueryBuilder().delete().from(Flight).execute();
 
-    fs.createReadStream(path.resolve(__dirname, "assets", "flights.csv"))
+    fs.createReadStream(path.resolve(__dirname, "assets", flightsCsvName))
       .pipe(
         csvParser.parse({
           headers: (headers) => headers.map((h) => h?.toLowerCase()),
@@ -102,7 +106,12 @@ const seedFlights = async (): Promise<void> => {
 
           const isCsv = true;
 
-          const flight = addPropertiesToFlight(newFlight, relations, data, isCsv);
+          const flight = addPropertiesToFlight(
+            newFlight,
+            relations,
+            data,
+            isCsv
+          );
 
           const flightRepository = AppDataSource.getRepository(Flight);
           await flightRepository.save(flight);
@@ -113,7 +122,7 @@ const seedFlights = async (): Promise<void> => {
 
         //Shut down database connection
         await AppDataSource.destroy();
-        console.log("Database disconnected")
+        console.log("Database disconnected");
       });
   } catch (error) {
     if (error instanceof Error) {
